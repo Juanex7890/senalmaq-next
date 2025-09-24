@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import {
   collection,
@@ -13,7 +13,6 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAnalytics, isSupported as isAnalyticsSupported, Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBi34J-Y5FoNhR48xdwk0saCvsyNJ4TJRM",
@@ -25,20 +24,8 @@ const firebaseConfig = {
   measurementId: "G-18YHT6B0RQ",
 };
 
-const app = initializeApp(firebaseConfig);
-
-let analytics: Analytics | null = null;
-if (typeof window !== "undefined") {
-  isAnalyticsSupported()
-    .then((supported) => {
-      if (supported) {
-        analytics = getAnalytics(app);
-      }
-    })
-    .catch(() => {
-      /* analytics is optional */
-    });
-}
+const apps = getApps();
+const app: FirebaseApp = apps.length > 0 ? apps[0] : initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -257,7 +244,6 @@ export {
   auth,
   db,
   storage,
-  analytics,
   SOCIAL_DEFAULTS,
   CATEGORY_DEFAULTS,
 };
